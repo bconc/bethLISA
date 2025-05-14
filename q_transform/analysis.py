@@ -11,9 +11,9 @@ import matplotlib.colors as col
 import h5py as h5
 import numpy as np
 import matplotlib.pyplot as plt
-from KyeLDC.Code.KyeLISAModule import analysis as kla
+# from KyeLDC.Code.KyeLISAModule import analysis as kla
 from testing import *
-from lisaHTI.search import _generate_triggers, _cluster_triggers
+# from lisaHTI.search import _generate_triggers, _cluster_triggers
 from astropy import units
 from gwpy.timeseries import TimeSeries, TimeSeriesDict
 from prettytable import PrettyTable
@@ -548,14 +548,14 @@ def missing_glitches(found_glitches, real_glitches, amp_cutoff=None):
                 idx = np.where(glitch_time == np.array(real_glitches['time']))[0]
                 seen_glitch[k] = {'time trigg': glitch_data['time trigg'], 'time corr': glitch_time,
                                   'freq': glitch_data['freq'], 'beta': real_glitches['beta'][idx],
-                                  'amplitude': real_glitches['amplitude'][idx],
+                                  'amplitude': real_glitches['level'][idx],
                                   'channels': glitch_data['channels']}
                 seen_glitches.append(glitch_time)
                 k += 1
         for i in range(len(real_glitches['time'])):
             if real_glitches['time'][i] not in seen_glitches:
                 missed_glitch[i] = {'time corr': real_glitches['time'][i], 'beta': real_glitches['beta'][i],
-                                    'amplitude': real_glitches['amplitude'][i]}
+                                    'amplitude': real_glitches['level'][i]}
 
     else:
         for key in found_glitches.keys():
@@ -563,18 +563,18 @@ def missing_glitches(found_glitches, real_glitches, amp_cutoff=None):
             glitch_data = found_glitches[key]
             if glitch_time in real_glitches['time']:
                 idx = np.where(glitch_time == np.array(real_glitches['time']))[0]
-                if real_glitches['amplitude'][idx] >= amp_cutoff:
+                if real_glitches['level'][idx] >= amp_cutoff:
                     seen_glitch[k] = {'time trigg': glitch_data['time trigg'], 'time corr': glitch_time,
                                       'freq': glitch_data['freq'], 'beta': real_glitches['beta'][idx],
-                                      'amplitude': real_glitches['amplitude'][idx],
+                                      'amplitude': real_glitches['level'][idx],
                                       'channels': glitch_data['channels']}
                     seen_glitches.append(glitch_time)
                     k += 1
         for i in range(len(real_glitches)):
             if real_glitches['time'][i] not in seen_glitches:
-                if real_glitches['amplitude'][i] >= amp_cutoff:
+                if real_glitches['level'][i] >= amp_cutoff:
                     missed_glitch[i] = {'time corr': real_glitches['time'][i], 'beta': real_glitches['beta'][i],
-                                        'amplitude': real_glitches['amplitude'][i]}
+                                        'amplitude': real_glitches['level'][i]}
 
     return missed_glitch, seen_glitch
 
@@ -765,7 +765,6 @@ def analysis(fname_list, white_dict, cutoff=None, need_amp=False, remove_fp=Fals
             return seen_glitches, missed_glitches, seen_cut_glitches, missed_cut_glitches
 
         else:
-
             if need_false:
                 false_dict = {}
                 false_list = [glitch_false_xy, glitch_false_xz, glitch_false_yz, glitch_false_t, glitch_false_e]
